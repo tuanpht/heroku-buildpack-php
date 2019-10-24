@@ -29,7 +29,7 @@ function getflag($number) {
 function mkmetas($package, array &$metapaks, &$have_runtime_req = false) {
 	// filter platform reqs
 	$platfilter = function($v) { return preg_match("#^(hhvm$|php(-64bit)?$|ext-)#", $v); };
-	
+
 	// extract only platform requires, replaces and provides
 	$preq = array_filter(isset($package["require"]) ? $package["require"] : [], $platfilter, ARRAY_FILTER_USE_KEY);
 	$prep = array_filter(isset($package["replace"]) ? $package["replace"] : [], $platfilter, ARRAY_FILTER_USE_KEY);
@@ -131,7 +131,7 @@ if(file_exists($COMPOSER_LOCK)) {
 		}
 		$requireDev = array_merge($requireDev, mkdep($sfr));
 	}
-	
+
 	// collect platform requirements from regular packages in lock file
 	foreach($lock["packages"] as $package) {
 		if(mkmetas($package, $metapaks, $have_runtime_req)) {
@@ -144,7 +144,7 @@ if(file_exists($COMPOSER_LOCK)) {
 			$requireDev[$package["name"]] = $package["version"];
 		}
 	}
-	
+
 	// add all meta-packages to one local package repo
 	if($metapaks) $repositories[] = ["type" => "package", "package" => $metapaks];
 }
@@ -164,6 +164,8 @@ if(!$have_runtime_req) {
 
 $require["heroku-sys/apache"] = "^2.4.10";
 $require["heroku-sys/nginx"] = "^1.8.0";
+unset($require["heroku-sys/ext-grpc"]);
+unset($require["google/cloud-firestore"]);
 
 preg_match("#^([^-]+)(?:-([0-9]+))?\$#", $STACK, $stack);
 $provide = ["heroku-sys/".$stack[1] => (isset($stack[2])?$stack[2]:"1").gmdate(".Y.m.d")]; # cedar: 14.2016.02.16 etc
